@@ -8,6 +8,7 @@ plt.plot(x, np.sin(x), label="sin(x)")
 plt.plot(x, np.cos(x), label="cos(x)")
 plt.title("Environment Test — Everything Works!")
 plt.xlabel("x")
+#sium
 plt.ylabel("y")
 plt.legend()
 plt.grid(True)
