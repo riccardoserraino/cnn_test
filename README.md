@@ -3,17 +3,19 @@
 
 ## Setup (one-time)
 
+'''
+cd path/to/you_folder
+'''
+
 **Linux**
 ```bash
-cd path/to/Sample_pkg # Change path accordingly
-python -m venv venv
+python3 -m venv venv
 chmod +x run.sh
 ```
 
 **Windows**
 ```bat
-cd path\to\Sample_pkg # Change path accordingly
-python -m venv venv
+python3 -m venv venv
 ```
 
 ## Run
