@@ -3,9 +3,9 @@
 
 ## Setup (one-time)
 
-'''
+```
 cd path/to/you_folder
-'''
+```
 
 **Linux**
 ```bash
