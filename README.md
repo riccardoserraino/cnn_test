@@ -4,7 +4,7 @@
 ## Setup (one-time)
 
 ```
-cd path/to/you_folder
+cd path/to/your_folder
 ```
 
 **Linux**
