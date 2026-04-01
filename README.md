@@ -1,4 +1,4 @@
-# CNN Insects Classificator
+# Insects Classificator
 **Authors:** Riccardo Serraino, Giuliano Livi
 
 ## Setup (one-time)
