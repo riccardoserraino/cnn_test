@@ -5,7 +5,7 @@ IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
 EPOCHS = 15
-directory = "/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/datasets/insects/"
+directory = "/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/datasets/"
 
 # Loading all the dataset in a tensoerflow dataset
 dataset = tf.keras.preprocessing.image_dataset_from_directory(directory, 
