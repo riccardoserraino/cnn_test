@@ -2,15 +2,15 @@ from libraries import *
 from utils import *
 
 
-###################
-# HYPERPARAMETERS #
-###################
+##############
+# PARAMETERS #
+##############
 
 
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 20
+EPOCHS = 1
 
 
 
@@ -45,7 +45,6 @@ print("\n\nSamples grid saved to plots/samples.png")
 
 
 # Split dataset into train, validation and test sets
-
 train_ds, val_ds, test_ds = get_dataset_partitions_tf(dataset)
 
 '''
@@ -61,7 +60,6 @@ print(f"Testing:    {len(test_ds)}")
 #############
 
 # Data Normalization 
-
 resize_and_rescale = tf.keras.Sequential([
   layers.Resizing(IMAGE_SIZE, IMAGE_SIZE),
   layers.Rescaling(1./255),
@@ -69,7 +67,6 @@ resize_and_rescale = tf.keras.Sequential([
 
 
 # Model architecture
-
 n_classes = 3
 
 model = models.Sequential([
@@ -89,10 +86,13 @@ model = models.Sequential([
     layers.MaxPooling2D((2,2)),
     layers.Flatten(),
     layers.Dense(64, activation='relu'),
+    layers.Dropout(0.2), # To avoid overfitting we drop 20% of the neurons in the fully connected layer during training 
     layers.Dense(n_classes, activation='softmax'),
 ])
 
-#print(model.summary())
+'''
+print(model.summary())
+'''
 
 
 
@@ -100,6 +100,23 @@ model = models.Sequential([
 # TRAINING #
 ############
 
+# Data Augmentation
+data_augmentation = tf.keras.Sequential([
+  layers.RandomFlip("horizontal_and_vertical"),
+  layers.RandomRotation(0.2),
+  layers.RandomZoom(0.2),
+  layers.RandomContrast(0.2),
+  layers.RandomBrightness(0.2),
+  layers.RandomTranslation(0.2, 0.2),
+  layers.RandomCrop(IMAGE_SIZE, IMAGE_SIZE),
+])
+
+# Apply data augmentation to training dataset
+train_ds = train_ds.map(
+    lambda x, y: (data_augmentation(x, training=True), y)
+).prefetch(buffer_size=tf.data.AUTOTUNE)
+
+# Compile and train the model
 model.compile(
     optimizer='adam',
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
@@ -114,6 +131,7 @@ history = model.fit(
     epochs=EPOCHS,
 )
 
+# Evaluate the model on test dataset
 scores = model.evaluate(test_ds)
 print(f"\n\naccuracy: {scores[1]*100}%")
 print(f"loss: {scores[0]}")
@@ -124,6 +142,7 @@ print(f"loss: {scores[0]}")
 # LEARNING CURVES #
 ###################
 
+'''
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 
@@ -147,13 +166,14 @@ plt.title('Training and Validation Loss')
 
 plt.savefig("plots/learning_curves.png")
 print("\n\nLearning curves saved to plots/learning_curves.png")
-
+'''
 
 
 ###############
 # PREDICTIONS #
 ###############
 
+'''
 plt.figure(figsize=(15, 15))
 for images, labels in test_ds.take(1):
     plt.figure(figsize=(15, 15))
@@ -170,11 +190,11 @@ for images, labels in test_ds.take(1):
 
     plt.savefig("plots/predictions.png")
 print("\n\nPredictions grid example saved to plots/predictions.png")
-
+'''
 
 
 ##############
 # MODEL SAVE #
 ##############
 
-model.save("../models/v1")
+model.save("models/v1.keras")
