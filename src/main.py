@@ -1,17 +1,20 @@
 from libraries import *
+from utils import *
+from keras.models import load_model
+from PIL import Image
+
+model = load_model("/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/models/model_v1.keras")
 
 
-x = np.linspace(0, 2 * np.pi, 100)
+img = Image.open("/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/datasets/farfals.jpg").convert("RGB")
+img = np.array(img, dtype=np.float32)
+# load_model si aspetta un batch, quindi aggiungi una dimensione
+img = np.expand_dims(img, axis=0)  # shape: (1, 28, 28, 1)
 
-plt.figure(figsize=(8, 4))
-plt.plot(x, np.sin(x), label="sin(x)")
-plt.plot(x, np.cos(x), label="cos(x)")
-plt.title("Environment Test — Everything Works!")
-plt.xlabel("x")
-#sium
-plt.ylabel("y")
-plt.legend()
-plt.grid(True)
-plt.tight_layout()
-plt.savefig("plots/plot.png")
-print("Plot saved to plots/plot.png")
+prediction = model.predict(img)
+predicted_class = np.argmax(prediction)
+confidence = prediction[0][predicted_class] * 100  # confidence as percentage
+
+class_names = ['Bee', 'Butterfly', 'Ladybug']
+print(f"Classe predetta: {class_names[predicted_class]}")
+print(f"Confidence: {confidence:.2f}%")
