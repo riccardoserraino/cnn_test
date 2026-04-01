@@ -15,7 +15,7 @@ chmod +x run.sh
 
 **Windows**
 ```bat
-python3 -m venv venv
+python -m venv venv
 ```
 
 ## Run
