@@ -1,5 +1,3 @@
 /models/
 venv/
-pycache/
-*.pyc
-
+src/__pycache__
