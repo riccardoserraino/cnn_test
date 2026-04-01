@@ -1,0 +1,3 @@
+echo "/models/*.h5" >> .gitignore
+echo "venv/" >> .gitignore
+echo "src/__pycache__/" >> .gitignore
