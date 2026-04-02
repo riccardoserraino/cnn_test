@@ -27,7 +27,11 @@ def predict(model, class_names, img):
 
     predicted_class = class_names[np.argmax(predictions[0])]
     confidence = round(100 * (np.max(predictions[0])), 2)
-    return predicted_class, confidence
+
+    if confidence >= 85:
+        return predicted_class, confidence
+    else:
+        return "UNCERTAIN", confidence
 
 
 

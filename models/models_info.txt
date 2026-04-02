@@ -1,0 +1,40 @@
+# v1
+layers: 32 64 64
+dropout 0.2
+epochs 15
+confidence > 0.8
+
+accuracy: 96.35416865348816%
+loss: 0.09273678064346313
+
+
+# v2
+layers: 32 64 64
+dropout 0.3
+epochs 15
+confidence > 0.8
+
+accuracy: 92.1875%
+loss: 0.2500286102294922
+
+
+# v3
+layers: 32 64 64
+dropout 0.3
+epochs 20
+confidence > 0.85
+
+accuracy: 94.53125%
+loss: 0.1874488741159439
+
+
+# v4
+layers: 32 64 64 64 128
+dropout 0.3
+epochs 20
+confidence > 0.85
+
+accuracy: 95.57291865348816%
+loss: 0.17096872627735138
+
+

@@ -1,5 +1,6 @@
 from libraries import *
-from utils import *
+from nn_utils import *
+from plot_utils import *
 
 
 ##############
@@ -10,7 +11,7 @@ from utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 1
+EPOCHS = 20
 
 
 
@@ -80,19 +81,14 @@ model = models.Sequential([
     layers.MaxPooling2D((2,2)),
     layers.Conv2D(64, (3,3), activation='relu'),
     layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3,3), activation='relu'),
-    layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3,3), activation='relu'),
-    layers.MaxPooling2D((2,2)),
+    layers.Conv2D(128, (3,3), activation='relu'),
     layers.Flatten(),
     layers.Dense(64, activation='relu'),
-    layers.Dropout(0.2), # To avoid overfitting we drop 20% of the neurons in the fully connected layer during training 
+    layers.Dropout(0.3), # To avoid overfitting we drop 20% of the neurons in the fully connected layer during training 
     layers.Dense(n_classes, activation='softmax'),
 ])
 
-'''
-print(model.summary())
-'''
+# print(model.summary())
 
 
 
@@ -138,63 +134,24 @@ print(f"loss: {scores[0]}")
 
 
 
-###################
-# LEARNING CURVES #
-###################
+##################
+# LEARNING STATS #
+##################
 
-'''
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-plt.figure(figsize=(8, 8))
-
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(range(EPOCHS), acc, label='Training Accuracy')
-plt.plot(range(EPOCHS), val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
-
-plt.subplot(1, 2, 2)
-plt.plot(range(EPOCHS), loss, label='Training Loss')
-plt.plot(range(EPOCHS), val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-
-plt.savefig("plots/learning_curves.png")
-print("\n\nLearning curves saved to plots/learning_curves.png")
-'''
+# Plot Learning Curves
+plot_learning_curves(history, EPOCHS)
 
 
-###############
-# PREDICTIONS #
-###############
+# Plot Prediction Grid
+plot_predictions_grid(model, test_ds, class_names, predict)
 
-'''
-plt.figure(figsize=(15, 15))
-for images, labels in test_ds.take(1):
-    plt.figure(figsize=(15, 15))
-    for i in range(9):
-        ax = plt.subplot(3, 3, i + 1)
-        plt.imshow(images[i].numpy().astype("uint8"))
-        
-        predicted_class, confidence = predict(model, class_names, images[i].numpy())
-        actual_class = class_names[labels[i]] 
-        
-        plt.title(f"actual: {actual_class},\n predicted: {predicted_class}.\n confidence: {confidence}%")
-        
-        plt.axis("off")
 
-    plt.savefig("plots/predictions.png")
-print("\n\nPredictions grid example saved to plots/predictions.png")
-'''
+# Confusion Matrix
+#
 
 
 ##############
 # MODEL SAVE #
 ##############
 
-model.save("models/v1.keras")
+model.save("models/v4.keras")

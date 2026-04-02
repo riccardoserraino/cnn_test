@@ -1,3 +1,14 @@
-/models/
+# Pretrained models
+*.h5
+*.keras
+
+# Virtual environments
 venv/
-src/__pycache__
+env/
+.venv/
+
+# IDE
+.vscode/
+
+# Python cache
+src/__pycache__/
