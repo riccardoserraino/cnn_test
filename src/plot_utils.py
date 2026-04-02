@@ -68,5 +68,13 @@ def plot_predictions_grid(model, dataset, class_names, predict_fn,
 
 
 # CONFUSION MATRIX
-
+def plot_confusion_matrix(cm, class_names):
+    
+    plt.figure(figsize=(8, 6))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+    disp.plot(cmap='Blues', values_format='d')
+    plt.title('Confusion Matrix - Test Set')
+    plt.tight_layout()
+    plt.savefig('plots/confusion_matrix.png', dpi=300, bbox_inches='tight')
+    print("Confusion Matrix saved to plots/confusion_matrix.png")
 

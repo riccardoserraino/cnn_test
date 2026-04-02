@@ -11,7 +11,7 @@ from plot_utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 20
+EPOCHS = 1
 
 
 
@@ -141,13 +141,13 @@ print(f"loss: {scores[0]}")
 # Plot Learning Curves
 plot_learning_curves(history, EPOCHS)
 
-
 # Plot Prediction Grid
 plot_predictions_grid(model, test_ds, class_names, predict)
 
-
 # Confusion Matrix
-#
+cm = compute_confusion_matrix(model, test_ds)
+plot_confusion_matrix(cm, class_names)
+
 
 
 ##############

@@ -1,6 +1,6 @@
 from libraries import *
 
-
+# Partitioning the dataset into train, validate and test splits
 def get_dataset_partitions_tf(ds, train_split=0.70, val_split=0.15, test_split=0.15, shuffle=True, shuffle_size=10000):
     assert (train_split + test_split + val_split) == 1
     
@@ -18,7 +18,7 @@ def get_dataset_partitions_tf(ds, train_split=0.70, val_split=0.15, test_split=0
     
     return train_ds, val_ds, test_ds
  
-
+# Prediction output 
 def predict(model, class_names, img):
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
@@ -33,8 +33,18 @@ def predict(model, class_names, img):
     else:
         return "UNCERTAIN", confidence
 
-
-
+# Confusion Matrix 
+def compute_confusion_matrix(model, test_ds):
+    
+    y_true = []
+    y_pred = []
+    
+    for images, labels in test_ds:
+        predictions = model.predict(images)
+        y_pred.extend(np.argmax(predictions, axis=1))
+        y_true.extend(labels.numpy())
+    
+    return confusion_matrix(y_true, y_pred)
 
 
 
