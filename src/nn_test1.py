@@ -5,7 +5,7 @@ IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
 EPOCHS = 15
-directory = "/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/datasets/"
+directory = "/home/giuliano-livi/Desktop/Master/FRE-2026/Agro_Insect_Vision/datasets/"
 
 # Loading all the dataset in a tensoerflow dataset
 dataset = tf.keras.preprocessing.image_dataset_from_directory(directory, 
@@ -180,4 +180,4 @@ print("\n\nPredictions grid example saved to plots/predictions.png")
 # MODEL SAVE #
 ##############
 
-model.save("/home/giuliano-livi/Desktop/Master/FRE-2026/cnn_test/models/model_v1.keras")
+model.save("/home/giuliano-livi/Desktop/Master/FRE-2026/Agro_Insect_Vision/models/model_v1.keras")
