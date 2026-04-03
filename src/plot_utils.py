@@ -1,5 +1,5 @@
 from libraries import *
-from nn_utils import *
+from cnn_utils import *
 
 # Random image sample 
 def plot_random_samples(dataset, class_names, n_images=12, save_path="plots/random_samples.png"):
@@ -31,7 +31,7 @@ def plot_random_samples(dataset, class_names, n_images=12, save_path="plots/rand
 
 
 
-# learning curves
+# Learning curves
 def plot_learning_curves(history, epochs, save_path="plots/learning_curves.png"):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
@@ -62,8 +62,6 @@ def plot_learning_curves(history, epochs, save_path="plots/learning_curves.png")
 
 
 # prediction grid example
-import matplotlib.pyplot as plt
-
 def plot_predictions_grid(model, dataset, class_names, predict_fn, 
                           save_path="plots/predictions.png", grid_size=3):
     plt.figure(figsize=(15, 15))
@@ -73,19 +71,24 @@ def plot_predictions_grid(model, dataset, class_names, predict_fn,
             ax = plt.subplot(grid_size, grid_size, i + 1)
             plt.imshow(images[i].numpy().astype("uint8"))
 
-            predicted_class, confidence = predict_fn(
+            predicted_class, confidence, is_confident = predict_fn(
                 model, class_names, images[i].numpy()
             )
+
             actual_class = class_names[labels[i]]
 
-            if predicted_class != "UNCERTAIN":
+            if is_confident:
                 plt.title(
                     f"actual: {actual_class}\n"
                     f"pred: {predicted_class} ({confidence}%)"
                 )
                 print(f"Predicted: {predicted_class} ({confidence}%)")
             else:
-                plt.title("UNCERTAIN")
+                plt.title(
+                    f"actual: {actual_class}\n"
+                    f"pred: {predicted_class} ({confidence}%) [LOW CONF]"
+                )
+                print(f"Low confidence: {predicted_class} ({confidence}%)")
 
             plt.axis("off")
 
@@ -94,7 +97,6 @@ def plot_predictions_grid(model, dataset, class_names, predict_fn,
     plt.close()
 
     print(f"\n\nPredictions grid example saved to {save_path}")
-
 
 # Confusion matrix
 def plot_confusion_matrix(cm, class_names):

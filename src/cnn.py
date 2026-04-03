@@ -1,5 +1,5 @@
 from libraries import *
-from nn_utils import *
+from cnn_utils import *
 from plot_utils import *
 
 
@@ -11,7 +11,7 @@ from plot_utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 25
+EPOCHS = 1
 
 
 
@@ -179,4 +179,4 @@ plot_augmentation_effect(
 # MODEL SAVE #
 ##############
 
-model.save("models/v5.keras")
+model.save("models/v6.keras")

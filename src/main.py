@@ -1,5 +1,5 @@
 from libraries import *
-from nn_utils import *
+from cnn_utils import *
 
 # Initialize
 class_names = ['Bee', 'Butterfly', 'Ladybug']

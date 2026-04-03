@@ -1,5 +1,5 @@
 from libraries import *
-from nn_utils import *
+from cnn_utils import *
 from plot_utils import *
 
 IMAGE_SIZE = 256
