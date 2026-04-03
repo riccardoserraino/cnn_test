@@ -46,7 +46,22 @@ def compute_confusion_matrix(model, test_ds):
     
     return confusion_matrix(y_true, y_pred)
 
+# Classification report 
+def compute_classification_report(model, test_ds):
+    
+    y_true = []
+    y_pred = []
+    
+    for images, labels in test_ds:
+        predictions = model.predict(images)
+        y_pred.extend(np.argmax(predictions, axis=1))
+        y_true.extend(labels.numpy())
+    
+    return classification_report(y_true, y_pred)
 
+# Safe saturation
+def safe_saturation(x):
+    return tf.image.random_saturation(x, lower=0.75, upper=1.25)
 
 
 

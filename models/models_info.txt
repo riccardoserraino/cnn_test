@@ -37,4 +37,21 @@ confidence > 0.85
 accuracy: 95.57291865348816%
 loss: 0.17096872627735138
 
+# v5
+layers: 
+Conv2D -> Conv2D -> MaxPooling2D  32 32
+Conv2D -> Conv2D -> MaxPooling2D  64 64
+Conv2D -> Conv2D -> MaxPooling2D  128 128
+GlobalAveragePooling2D 
+Dense 
+Dropout 
+Dense 
+
+dropout 0.3
+epochs 25
+confidence > 0.85
+
+accuracy: 91.68975353240967%
+loss: 0.1966855376958847
+
 

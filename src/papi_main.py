@@ -11,7 +11,7 @@ from plot_utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 1
+EPOCHS = 25
 
 
 
@@ -28,31 +28,17 @@ dataset = tf.keras.preprocessing.image_dataset_from_directory(
 )
 class_names = dataset.class_names
 
-'''
-print(f"\n\nClasses found: {class_names}")
-print(f"\n\nDataset size: {len(dataset)}\n(Note it is approx. n° of elements in our datasets/batches)")
-
-plt.figure(figsize=(10, 10))
-for image_batch, labels_batch in dataset.take(1):
-    for i in range(12):
-        ax = plt.subplot(3, 4, i + 1)
-        plt.imshow(image_batch[i].numpy().astype("uint8"))
-        plt.title(class_names[labels_batch[i]])
-        plt.axis("off")
-plt.tight_layout()
-plt.savefig("plots/samples.png")
-print("\n\nSamples grid saved to plots/samples.png")
-'''
-
+#print(f"\n\nClasses found: {class_names}")
+#print(f"\n\nDataset size: {len(dataset)}\n(Note it is approx. n° of elements in our datasets/batches)")
+#plot_random_samples(dataset, class_names)
 
 # Split dataset into train, validation and test sets
 train_ds, val_ds, test_ds = get_dataset_partitions_tf(dataset)
 
-'''
-print(f"\n\nTraining:   {len(train_ds)}")
-print(f"Validation: {len(val_ds)}")
-print(f"Testing:    {len(test_ds)}")
-'''
+
+#print(f"\n\nTraining:   {len(train_ds)}")
+#print(f"Validation: {len(val_ds)}")
+#print(f"Testing:    {len(test_ds)}")
 
 
 
@@ -68,27 +54,42 @@ resize_and_rescale = tf.keras.Sequential([
 
 
 # Model architecture
+# Conv2D -- feature extraction
+# MaxPooling2D -- dimensionality reduction
+# GlobalAveragePooling -- summarization of feature maps (vector out)
+# Flatten -- flatten the output of prev. layer (vector out)
+# Dense -- decision making
+# Dropout -- regularization tech. to drop random neurons
+#
+# IDEA: Conv2D -> Conv2D -> MaxPooling2D 
+#       Conv2D -> Conv2D -> MaxPooling2D 
+#       Conv2D -> Conv2D -> MaxPooling2D
+#       Flatten 
+#       Dense 
+#       Dropout 
+#       Dense 
+
 n_classes = 3
 
 model = models.Sequential([
     tf.keras.Input(shape=(IMAGE_SIZE, IMAGE_SIZE, CHANNELS)),    
     resize_and_rescale,
     layers.Conv2D(32, kernel_size=(3,3), activation='relu'),
+    layers.Conv2D(32, kernel_size=(3,3), activation='relu'),
     layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3,3), activation='relu'),
+    layers.Conv2D(64, kernel_size=(3,3), activation='relu'),
+    layers.Conv2D(64, kernel_size=(3,3), activation='relu'),
     layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3,3), activation='relu'),
+    layers.Conv2D(128, kernel_size=(3,3), activation='relu'),
+    layers.Conv2D(128, kernel_size=(3,3), activation='relu'),
     layers.MaxPooling2D((2,2)),
-    layers.Conv2D(64, (3,3), activation='relu'),
-    layers.MaxPooling2D((2,2)),
-    layers.Conv2D(128, (3,3), activation='relu'),
-    layers.Flatten(),
+    layers.GlobalAveragePooling2D(),
     layers.Dense(64, activation='relu'),
-    layers.Dropout(0.3), # To avoid overfitting we drop 20% of the neurons in the fully connected layer during training 
+    layers.Dropout(0.3), # To avoid overfitting we drop 30% of the neurons in the fully connected layer during training 
     layers.Dense(n_classes, activation='softmax'),
 ])
 
-# print(model.summary())
+print(model.summary())
 
 
 
@@ -98,13 +99,26 @@ model = models.Sequential([
 
 # Data Augmentation
 data_augmentation = tf.keras.Sequential([
-  layers.RandomFlip("horizontal_and_vertical"),
-  layers.RandomRotation(0.2),
-  layers.RandomZoom(0.2),
-  layers.RandomContrast(0.2),
-  layers.RandomBrightness(0.2),
-  layers.RandomTranslation(0.2, 0.2),
-  layers.RandomCrop(IMAGE_SIZE, IMAGE_SIZE),
+    # Occlusion
+    layers.RandomCrop(IMAGE_SIZE, IMAGE_SIZE),
+
+    # Geometrical
+    layers.RandomFlip("horizontal"),
+    layers.RandomRotation(0.3),
+    layers.RandomZoom(
+        height_factor=(-0.2, 0.2), 
+        width_factor=(-0.2, 0.2)        
+    ),
+    layers.RandomTranslation(0.15, 0.15),
+
+    # Color & Lighting
+    layers.RandomBrightness(0.3),
+    layers.RandomContrast(0.3),
+    layers.RandomHue(0.05),
+    layers.Lambda(lambda x: tf.map_fn(safe_saturation, x)),
+
+    # Noise
+    layers.GaussianNoise(0.02),
 ])
 
 # Apply data augmentation to training dataset
@@ -148,10 +162,21 @@ plot_predictions_grid(model, test_ds, class_names, predict)
 cm = compute_confusion_matrix(model, test_ds)
 plot_confusion_matrix(cm, class_names)
 
+# Classification Report
+cr = compute_classification_report(model, test_ds)
+print(f"\n\nClassification Report:\n{cr}")
+
+# Augmentation Visualization e.g. 3 random versions from train_ds
+plot_augmentation_effect(
+    train_ds,
+    data_augmentation,
+    class_names,
+    save_path="plots/augmentation_test.png",
+)
 
 
 ##############
 # MODEL SAVE #
 ##############
 
-model.save("models/v4.keras")
+model.save("models/v5.keras")
