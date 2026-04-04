@@ -13,15 +13,22 @@ BATCH_SIZE = 32
 CHANNELS = 3
 EPOCHS = 1
 
+random_seed = 42
+
 
 
 #################
 # PREPROCESSING #
 #################
 
+# Set random seed for reproducibility
+tf.random.set_seed(random_seed)
+np.random.seed(random_seed)
+
+# Load datasets
 dataset = tf.keras.preprocessing.image_dataset_from_directory(
     "datasets",
-    seed=123,
+    seed=random_seed,
     shuffle=True,
     image_size=(IMAGE_SIZE,IMAGE_SIZE),
     batch_size=BATCH_SIZE
