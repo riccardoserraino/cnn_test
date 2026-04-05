@@ -5,9 +5,15 @@ from plot_utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 
+random_seed = 42
+
+# Set random seed for reproducibility
+tf.random.set_seed(random_seed)
+np.random.seed(random_seed)
+
 dataset = tf.keras.preprocessing.image_dataset_from_directory(
     "datasets",
-    seed=123,
+    seed=random_seed,
     shuffle=True,
     image_size=(IMAGE_SIZE,IMAGE_SIZE),
     batch_size=BATCH_SIZE

@@ -11,7 +11,7 @@ from plot_utils import *
 IMAGE_SIZE = 256
 BATCH_SIZE = 32
 CHANNELS = 3
-EPOCHS = 1
+EPOCHS = 50
 
 random_seed = 42
 
@@ -42,7 +42,6 @@ class_names = dataset.class_names
 # Split dataset into train, validation and test sets
 train_ds, val_ds, test_ds = get_dataset_partitions_tf(dataset)
 
-
 #print(f"\n\nTraining:   {len(train_ds)}")
 #print(f"Validation: {len(val_ds)}")
 #print(f"Testing:    {len(test_ds)}")
@@ -60,21 +59,14 @@ resize_and_rescale = tf.keras.Sequential([
 ])
 
 
-# Model architecture
+# Model architecture:
 # Conv2D -- feature extraction
 # MaxPooling2D -- dimensionality reduction
 # GlobalAveragePooling -- summarization of feature maps (vector out)
 # Flatten -- flatten the output of prev. layer (vector out)
 # Dense -- decision making
 # Dropout -- regularization tech. to drop random neurons
-#
-# IDEA: Conv2D -> Conv2D -> MaxPooling2D 
-#       Conv2D -> Conv2D -> MaxPooling2D 
-#       Conv2D -> Conv2D -> MaxPooling2D
-#       Flatten 
-#       Dense 
-#       Dropout 
-#       Dense 
+# BatchNormalization -- normalize activations to speed up training and improve stability
 
 n_classes = 3
 
@@ -82,17 +74,24 @@ model = models.Sequential([
     tf.keras.Input(shape=(IMAGE_SIZE, IMAGE_SIZE, CHANNELS)),    
     resize_and_rescale,
     layers.Conv2D(32, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.Conv2D(32, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.MaxPooling2D((2,2)),
     layers.Conv2D(64, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.Conv2D(64, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.MaxPooling2D((2,2)),
     layers.Conv2D(128, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.Conv2D(128, kernel_size=(3,3), activation='relu'),
+    layers.BatchNormalization(),
     layers.MaxPooling2D((2,2)),
     layers.GlobalAveragePooling2D(),
-    layers.Dense(64, activation='relu'),
-    layers.Dropout(0.3), # To avoid overfitting we drop 30% of the neurons in the fully connected layer during training 
+    layers.Dense(128, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dropout(0.3),
     layers.Dense(n_classes, activation='softmax'),
 ])
 
@@ -135,9 +134,25 @@ train_ds = train_ds.map(
 
 # Compile and train the model
 model.compile(
-    optimizer='adam',
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=['accuracy']
+)
+
+# Callbacks for better training
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    patience=7,
+    restore_best_weights=True,
+    verbose=1
+)
+
+reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,
+    patience=3,
+    min_lr=0.00005,
+    verbose=1
 )
 
 history = model.fit(
@@ -146,6 +161,7 @@ history = model.fit(
     validation_data=val_ds,
     verbose=1,
     epochs=EPOCHS,
+    callbacks=[early_stopping, reduce_lr]
 )
 
 # Evaluate the model on test dataset
@@ -160,7 +176,7 @@ print(f"loss: {scores[0]}")
 ##################
 
 # Plot Learning Curves
-plot_learning_curves(history, EPOCHS)
+plot_learning_curves(history)
 
 # Plot Prediction Grid
 plot_predictions_grid(model, test_ds, class_names, predict)
@@ -182,8 +198,10 @@ plot_augmentation_effect(
 )
 
 
+
 ##############
 # MODEL SAVE #
 ##############
 
 model.save("models/v6.keras")
+print("\n\nModel saved to models/*.keras")

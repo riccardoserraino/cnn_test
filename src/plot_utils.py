@@ -1,6 +1,7 @@
 from libraries import *
 from cnn_utils import *
 
+
 # Random image sample 
 def plot_random_samples(dataset, class_names, n_images=12, save_path="plots/random_samples.png"):
     plt.figure(figsize=(8,8))
@@ -30,28 +31,29 @@ def plot_random_samples(dataset, class_names, n_images=12, save_path="plots/rand
     print(f"\n\nSaved random samples to {save_path}")
 
 
-
 # Learning curves
-def plot_learning_curves(history, epochs, save_path="plots/learning_curves.png"):
+def plot_learning_curves(history, save_path="plots/learning_curves.png"):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
 
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
+    epochs = range(1, len(acc) + 1)
+
     plt.figure(figsize=(8, 8))
 
     # Accuracy subplot
     plt.subplot(1, 2, 1)
-    plt.plot(range(epochs), acc, label='Training Accuracy')
-    plt.plot(range(epochs), val_acc, label='Validation Accuracy')
+    plt.plot(epochs, acc, label='Training Accuracy')
+    plt.plot(epochs, val_acc, label='Validation Accuracy')
     plt.legend(loc='lower right')
     plt.title('Training and Validation Accuracy')
 
     # Loss subplot
     plt.subplot(1, 2, 2)
-    plt.plot(range(epochs), loss, label='Training Loss')
-    plt.plot(range(epochs), val_loss, label='Validation Loss')
+    plt.plot(epochs, loss, label='Training Loss')
+    plt.plot(epochs, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
 
@@ -167,3 +169,4 @@ def plot_augmentation_effect(dataset, data_augmentation, class_names, save_path=
     plt.tight_layout()
     plt.savefig(save_path)
     print(f"\n\nSaved augmentation comparison to {save_path}")
+

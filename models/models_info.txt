@@ -55,3 +55,27 @@ accuracy: 91.68975353240967%
 loss: 0.1966855376958847
 
 
+# v6
+Conv2D → BN → Conv2D → BN → MaxPooling2D  32 32
+Conv2D → BN → Conv2D → BN → MaxPooling2D  64 64
+Conv2D → BN → Conv2D → BN → MaxPooling2D  128 128
+GlobalAveragePooling2D
+Dense (128) → BN
+Dropout
+Dense (softmax)accuracy: 95.3125%
+loss: 0.1424989402294159
+
+learning rate = 0.001 (Adam)
+ReduceLROnPlateau → factor 0.5, patience 3, min_lr 5e-5
+EarlyStopping → patience 7, restore_best_weights
+
+Dropout = 0.3
+Data Augmentation (geom + color + noise)
+
+confidence threshold > 0.85
+
+accuracy: 95.3125%
+loss: 0.1424989402294159
+
+
+# 

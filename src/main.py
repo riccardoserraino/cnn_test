@@ -1,19 +1,22 @@
 from libraries import *
 from cnn_utils import *
 
+
 # Initialize
 class_names = ['Bee', 'Butterfly', 'Ladybug']
 
 # Load Model
-model = load_model("/models/v1.keras")
+model = load_model("models/v5.keras")
 
-# Image processing 
-img = Image.open("/jpg_image_to_test").convert("RGB")
+# Image Processing
+img = Image.open("other/Bee_1.jpg").convert("RGB")
+img = img.resize((256, 256)) # resize to match training
 img = np.array(img, dtype=np.float32)
-img = np.expand_dims(img, axis=0)  # current shape to match load model constraints: (1, 28, 28, 1)
+img = np.expand_dims(img, axis=0)  # (1, 256, 256, 3)
 
-# Prediction
-prediction, confidence = predict(model, class_names, img)
-print(f"Classe predetta: {prediction}")
-print(f"Confidence: {confidence:.2f}%")
+print("Input shape:", img.shape)
 
+# Predict
+predicted_class, confidence, is_confident = predict(model, class_names, img)
+print(f'Is the model confident enough? {"Yes" if is_confident else "No"}')    
+print(f"Predicted class: {predicted_class}\nConfidence: {confidence:.2f}%")
